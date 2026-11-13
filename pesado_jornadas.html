@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#14532d" />
+<title>Registro de pesado</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#17211b;background:#f4f7f4;font-synthesis:none}*{box-sizing:border-box}body{margin:0;padding:16px 14px 40px;max-width:760px;margin-inline:auto}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}.top h1{font-size:1.35rem;margin:0}.muted{color:#647067;font-size:.88rem}.panel{background:#fff;border:1px solid #dce5dd;border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 2px 8px #17351b0a}.row{display:flex;gap:10px;align-items:center}.row>*{min-width:0;flex:1}label{display:block;font-weight:650;font-size:.9rem;margin:10px 0 6px}input,textarea,select,button{font:inherit}input,textarea,select{width:100%;border:1px solid #cbd5ce;border-radius:10px;padding:12px;background:#fff;color:#17211b}textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:10px;padding:12px 14px;font-weight:700;cursor:pointer;background:#166534;color:#fff}.btn.secondary{background:#e7efe8;color:#174b2a}.btn.danger{background:#fee2e2;color:#991b1b}.btn.small{padding:8px 10px;font-size:.85rem}.btn:disabled{opacity:.45;cursor:not-allowed}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.stat{background:#f1f6f1;border-radius:12px;padding:12px}.stat strong{display:block;font-size:1.5rem;font-variant-numeric:tabular-nums}.stat span{font-size:.78rem;color:#657267}.progress{height:9px;background:#e5ebe6;border-radius:99px;overflow:hidden;margin-top:10px}.progress>div{height:100%;background:#16a34a;width:0;transition:width .2s}.entry{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end}.tablewrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{text-align:left;padding:10px 7px;border-bottom:1px solid #edf1ed;white-space:nowrap}th{color:#657267;font-size:.78rem}td:last-child{text-align:right}.status{font-size:.76rem;border-radius:99px;padding:4px 8px;background:#fff3d6;color:#855b00}.status.done{background:#dcfce7;color:#166534}.actions{display:flex;gap:7px;justify-content:flex-end}.hidden{display:none!important}.notice{padding:10px 12px;border-radius:10px;background:#eff6ff;color:#1e40af;font-size:.84rem}.footer{font-size:.78rem;color:#6b756d;text-align:center;margin:20px 0}.sectionhead{display:flex;align-items:center;justify-content:space-between;gap:8px}.sectionhead h2{font-size:1.05rem;margin:0}.pill{font-size:.75rem;color:#166534;background:#e7f5e9;padding:5px 9px;border-radius:99px}@media(max-width:440px){body{padding:12px 10px 30px}.entry{grid-template-columns:1fr 1fr}.entry button{grid-column:1/-1}.stats strong{font-size:1.25rem}.panel{padding:13px}}
+</style>
+</head>
+<body>
+<header class="top"><div><h1>Registro de pesado</h1><div class="muted">Jornadas independientes · guardado automático</div></div><span class="pill" id="saveState">Local</span></header>
+
+<section class="panel" id="homePanel">
+  <div class="sectionhead"><h2>Jornadas</h2><button class="btn small" id="newSessionBtn">+ Nueva jornada</button></div>
+  <label for="sessionSelect">Seleccionar jornada</label>
+  <select id="sessionSelect"><option value="">Cargando...</option></select>
+  <div class="muted" id="sessionMeta" style="margin-top:8px">Crea una jornada para comenzar.</div>
+</section>
+
+<main id="workArea" class="hidden">
+  <section class="panel">
+    <div class="sectionhead"><h2 id="sessionTitle">Jornada</h2><span class="pill" id="sessionStatus">En curso</span></div>
+    <div class="stats">
+      <div class="stat"><strong id="totalCount">0</strong><span>Aretes</span></div>
+      <div class="stat"><strong id="doneCount">0</strong><span>Pesados</span></div>
+      <div class="stat"><strong id="pendingCount">0</strong><span>Pendientes</span></div>
+    </div>
+    <div class="progress"><div id="progressBar"></div></div>
+    <div class="muted" id="progressText" style="margin-top:7px">0 % completado</div>
+  </section>
+
+  <section class="panel" id="listPanel">
+    <h2 style="font-size:1.05rem;margin:0 0 8px">1. Lista de aretes</h2>
+    <div class="muted">Pega los códigos separados por saltos de línea, comas o punto y coma. Los duplicados se omiten.</div>
+    <label for="earTags">Códigos de aretes</label>
+    <textarea id="earTags" placeholder="1025&#10;1048&#10;1092"></textarea>
+    <div class="row" style="margin-top:8px"><button class="btn" id="addTagsBtn">Agregar aretes</button><button class="btn secondary" id="clearTextBtn" type="button">Limpiar texto</button></div>
+    <div class="muted" id="listFeedback" style="margin-top:8px"></div>
+  </section>
+
+  <section class="panel">
+    <h2 style="font-size:1.05rem;margin:0 0 8px">2. Registrar peso</h2>
+    <div class="entry">
+      <div><label for="tagInput">Número de arete</label><input id="tagInput" inputmode="numeric" autocomplete="off" placeholder="Ej. 1025" /></div>
+      <div><label for="weightInput">Peso (kg)</label><input id="weightInput" inputmode="decimal" type="text" placeholder="Ej. 35.60" /></div>
+      <button class="btn" id="saveWeightBtn">Registrar</button>
+    </div>
+    <div class="muted" id="entryFeedback" style="margin-top:8px">Ingresa un arete de la lista y su peso.</div>
+  </section>
+
+  <section class="panel">
+    <div class="sectionhead"><h2>3. Registros de la jornada</h2><button class="btn secondary small" id="exportBtn">Exportar Excel</button></div>
+    <label for="filterInput">Buscar arete</label><input id="filterInput" placeholder="Escribe el número de arete..." />
+    <div class="tablewrap" style="margin-top:8px">
+      <table><thead><tr><th>Arete</th><th>Peso (kg)</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="recordsBody"></tbody></table>
+    </div>
+    <div class="muted" id="tableEmpty" style="padding:12px 4px">Todavía no hay aretes en esta jornada.</div>
+  </section>
+
+  <section class="panel">
+    <h2 style="font-size:1.05rem;margin:0 0 8px">4. Finalizar jornada</h2>
+    <div class="notice" id="finishNotice">Puedes exportar los datos en cualquier momento. Finalizar marca la jornada como completada; no elimina ni bloquea los datos.</div>
+    <div class="row" style="margin-top:10px"><button class="btn" id="finishBtn">Guardar / finalizar jornada</button><button class="btn secondary" id="reopenBtn">Reabrir jornada</button></div>
+  </section>
+</main>
+<div class="footer">Los datos se guardan en este navegador y dispositivo. Exporta respaldos periódicamente.</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+(() => {
+  'use strict';
+  const DB_NAME='pesadoGanadoDB', DB_VERSION=1, STORE='sessions';
+  let db, currentId=null, currentSession=null, saveTimer=null;
+  const $=id=>document.getElementById(id);
+  const now=()=>new Date().toISOString();
+  const dateLabel=iso=>new Date(iso).toLocaleString('es-PE');
+  const makeId=()=>Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
+  function openDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB_NAME,DB_VERSION);req.onupgradeneeded=()=>{const d=req.result;if(!d.objectStoreNames.contains(STORE))d.createObjectStore(STORE,{keyPath:'id'});};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});}
+  function store(mode='readonly'){return db.transaction(STORE,mode).objectStore(STORE);}
+  function getAll(){return new Promise((resolve,reject)=>{const r=store().getAll();r.onsuccess=()=>resolve(r.result||[]);r.onerror=()=>reject(r.error);});}
+  function putSession(){return new Promise((resolve,reject)=>{const r=store('readwrite').put(currentSession);r.onsuccess=()=>resolve();r.onerror=()=>reject(r.error);});}
+  function getSession(id){return new Promise((resolve,reject)=>{const r=store().get(id);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});}
+  function setSaved(){ $('saveState').textContent='Guardado'; $('saveState').style.background='#e7f5e9'; }
+  async function persist(){if(!currentSession)return;currentSession.updatedAt=now();$('saveState').textContent='Guardando…';await putSession();setSaved();}
+  function scheduleSave(){clearTimeout(saveTimer);$('saveState').textContent='Guardando…';saveTimer=setTimeout(()=>persist().catch(showError),250);}
+  function showError(e){console.error(e);alert('No se pudo guardar o procesar la operación. Comprueba el espacio disponible del navegador.');}
+  async function refreshSessions(){const all=(await getAll()).sort((a,b)=>b.createdAt.localeCompare(a.createdAt));const select=$('sessionSelect');select.innerHTML='';if(!all.length){select.add(new Option('No hay jornadas todavía',''));$('sessionMeta').textContent='Crea una jornada para comenzar.';return;}all.forEach(s=>select.add(new Option(`${s.name} · ${s.status==='done'?'Completada':'En curso'}`,s.id)));if(currentId&&all.some(s=>s.id===currentId))select.value=currentId;const chosen=all.find(s=>s.id===select.value)||all[0];select.value=chosen.id;$('sessionMeta').textContent=`${chosen.tags.length} aretes · Creada ${dateLabel(chosen.createdAt)}`;}
+  function render(){if(!currentSession)return;$('workArea').classList.remove('hidden');$('sessionTitle').textContent=currentSession.name;$('sessionStatus').textContent=currentSession.status==='done'?'Completada':'En curso';const total=currentSession.tags.length,done=currentSession.tags.filter(t=>currentSession.weights[t]!==undefined).length,pending=total-done,pct=total?done/total*100:0;$('totalCount').textContent=total;$('doneCount').textContent=done;$('pendingCount').textContent=pending;$('progressBar').style.width=pct+'%';$('progressText').textContent=pct.toFixed(1)+' % completado';$('finishNotice').textContent=currentSession.status==='done'?'Esta jornada está marcada como completada. Puedes reabrirla para hacer correcciones.':'Puedes exportar los datos en cualquier momento. Finalizar marca la jornada como completada; no elimina ni bloquea los datos.';$('finishBtn').disabled=currentSession.status==='done';$('reopenBtn').disabled=currentSession.status!=='done';$('addTagsBtn').disabled=currentSession.status==='done';$('saveWeightBtn').disabled=currentSession.status==='done';renderTable();}
+  function renderTable(){const q=$('filterInput').value.trim().toLowerCase(),body=$('recordsBody');body.innerHTML='';let shown=0;currentSession.tags.filter(t=>t.toLowerCase().includes(q)).forEach(tag=>{shown++;const has=currentSession.weights[tag]!==undefined;const tr=document.createElement('tr');const td1=document.createElement('td');td1.textContent=tag;const td2=document.createElement('td');td2.textContent=has?currentSession.weights[tag]:'—';const td3=document.createElement('td');const badge=document.createElement('span');badge.className='status'+(has?' done':'');badge.textContent=has?'Pesado':'Pendiente';td3.appendChild(badge);const td4=document.createElement('td');const actions=document.createElement('div');actions.className='actions';if(has){const edit=document.createElement('button');edit.className='btn secondary small';edit.textContent='Editar';edit.onclick=()=>editWeight(tag);actions.appendChild(edit);}td4.appendChild(actions);tr.append(td1,td2,td3,td4);body.appendChild(tr);});$('tableEmpty').classList.toggle('hidden',shown>0);}
+  async function createSession(){const name=prompt('Nombre de la jornada (por ejemplo: Pesado mañana 12-11-2026):');if(name===null)return;if(!name.trim()){alert('Escribe un nombre para la jornada.');return;}const s={id:makeId(),name:name.trim(),createdAt:now(),updatedAt:now(),status:'open',tags:[],weights:{}};currentSession=s;currentId=s.id;await putSession();await refreshSessions();render();$('earTags').focus();}
+  async function loadSession(id){if(!id){currentId=null;currentSession=null;$('workArea').classList.add('hidden');return;}const s=await getSession(id);if(!s)return;currentSession=s;currentId=id;await refreshSessions();render();}
+  function parseTags(raw){return [...new Set(raw.split(/[\n\r,;\t ]+/).map(x=>x.trim()).filter(Boolean))];}
+  async function addTags(){if(!currentSession||currentSession.status==='done')return;const incoming=parseTags($('earTags').value);if(!incoming.length){$('listFeedback').textContent='Pega o escribe al menos un código.';return;}const known=new Set(currentSession.tags);let added=0;incoming.forEach(t=>{if(!known.has(t)){currentSession.tags.push(t);known.add(t);added++;}});await persist();$('earTags').value='';$('listFeedback').textContent=`Se agregaron ${added} aretes. ${incoming.length-added} ya estaban en la lista.`;render();}
+  async function saveWeight(){if(!currentSession||currentSession.status==='done')return;const tag=$('tagInput').value.trim(),raw=$('weightInput').value.trim().replace(',','.');if(!tag||!raw){$('entryFeedback').textContent='Completa el arete y el peso.';return;}const weight=Number(raw);if(!Number.isFinite(weight)||weight<=0){$('entryFeedback').textContent='Ingresa un peso numérico mayor que cero.';return;}if(!currentSession.tags.includes(tag)){const add=confirm(`El arete ${tag} no está en la lista. ¿Deseas agregarlo y registrar su peso?`);if(!add)return;currentSession.tags.push(tag);}const previous=currentSession.weights[tag];currentSession.weights[tag]=Number(weight.toFixed(3));await persist();$('entryFeedback').textContent=previous===undefined?`Peso de ${tag} registrado.`:`Peso de ${tag} actualizado de ${previous} a ${currentSession.weights[tag]} kg.`;$('tagInput').value='';$('weightInput').value='';$('tagInput').focus();render();}
+  async function editWeight(tag){if(!currentSession)return;const old=currentSession.weights[tag];const value=prompt(`Editar peso del arete ${tag} (kg):`,String(old));if(value===null)return;const n=Number(value.trim().replace(',','.'));if(!Number.isFinite(n)||n<=0){alert('Peso no válido. No se modificó el registro.');return;}currentSession.weights[tag]=Number(n.toFixed(3));await persist();render();}
+  async function finish(status){if(!currentSession)return;if(status==='done'){const total=currentSession.tags.length,done=currentSession.tags.filter(t=>currentSession.weights[t]!==undefined).length;if(!confirm(`¿Marcar como completada esta jornada?\nPesados: ${done} de ${total}. Pendientes: ${total-done}.`))return;}currentSession.status=status;await persist();await refreshSessions();render();}
+  function exportExcel(){if(!currentSession)return;if(!window.XLSX){alert('No se pudo cargar el módulo Excel. Conéctate a Internet y vuelve a intentarlo.');return;}const rows=currentSession.tags.map(tag=>({Arete:tag,'Peso (kg)':currentSession.weights[tag]??'',Estado:currentSession.weights[tag]!==undefined?'Pesado':'Pendiente','Fecha de jornada':new Date(currentSession.createdAt).toLocaleDateString('es-PE')}));const wb=XLSX.utils.book_new();const ws=XLSX.utils.json_to_sheet(rows);ws['!cols']=[{wch:20},{wch:15},{wch:15},{wch:20}];XLSX.utils.book_append_sheet(wb,ws,'Pesos');const info=XLSX.utils.aoa_to_sheet([['Jornada',currentSession.name],['Creada',dateLabel(currentSession.createdAt)],['Estado',currentSession.status==='done'?'Completada':'En curso'],['Total aretes',currentSession.tags.length],['Pesados',currentSession.tags.filter(t=>currentSession.weights[t]!==undefined).length]]);XLSX.utils.book_append_sheet(wb,info,'Resumen');const safe=currentSession.name.replace(/[^a-z0-9-_]+/gi,'_').slice(0,45)||'jornada';XLSX.writeFile(wb,`Pesado_${safe}.xlsx`);}
+  $('newSessionBtn').onclick=()=>createSession().catch(showError);$('sessionSelect').onchange=e=>loadSession(e.target.value).catch(showError);$('addTagsBtn').onclick=()=>addTags().catch(showError);$('clearTextBtn').onclick=()=>$('earTags').value='';$('saveWeightBtn').onclick=()=>saveWeight().catch(showError);$('weightInput').addEventListener('keydown',e=>{if(e.key==='Enter')saveWeight().catch(showError);});$('tagInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('weightInput').focus();});$('filterInput').oninput=renderTable;$('exportBtn').onclick=exportExcel;$('finishBtn').onclick=()=>finish('done').catch(showError);$('reopenBtn').onclick=()=>finish('open').catch(showError);
+  (async()=>{try{if(!('indexedDB'in window))throw new Error('IndexedDB no disponible');db=await openDB();await refreshSessions();const all=await getAll();if(all.length){const latest=all.sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt))[0];await loadSession(latest.id);}setSaved();}catch(e){console.error(e);alert('No se pudo iniciar el almacenamiento local en este navegador.');}})();
+})();
+</script>
+</body>
+</html>
